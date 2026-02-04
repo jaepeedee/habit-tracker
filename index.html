@@ -3,129 +3,96 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>HABIT TIMER</title>
+  <title>HABIT TRACKER</title>
 
   <style>
     :root{
-      /* PAPER + INK */
-      --paper:   #f3ead8;     /* beige */
+      --paper:   #f3ead8;
       --paper2:  #efe2cb;
       --ink:     #0b0b0b;
-      --muted:   #5b5b5b;
-      --rule:    rgba(11,11,11,0.16);
+      --muted:   rgba(11,11,11,0.62);
 
-      /* ACCENT */
-      --accent:  #e10600;     /* swiss red */
+      --rule:    rgba(11,11,11,0.18);
+      --rule-strong: rgba(11,11,11,0.34);
 
-      /* SURFACES */
-      --glass:       rgba(255,255,255,0.38);
-      --glass-strong:rgba(255,255,255,0.58);
+      --accent-red:    #e10600;
+      --accent-green:  #2f6b47;
+      --accent-orange: #f0662a;
 
-      /* SHAPE */
-      --radius:  12px;        /* slightly sharp */
+      --panel:   rgba(255,255,255,0.84);
+      --panel2:  rgba(255,255,255,0.72);
+
+      --radius:  22px;
       --shadow:  0 18px 60px rgba(0,0,0,0.10);
+      --shadow-soft: 0 10px 30px rgba(0,0,0,0.08);
     }
 
     *{ box-sizing:border-box; }
     html, body{ height:100%; }
+
     body{
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--ink);
       background:
         radial-gradient(1200px 700px at 20% -10%, rgba(0,0,0,0.05), transparent 55%),
-        radial-gradient(1200px 700px at 90% 0%, rgba(225,6,0,0.06), transparent 55%),
+        radial-gradient(1200px 700px at 90% 0%, rgba(240,102,42,0.10), transparent 55%),
+        radial-gradient(1100px 650px at 70% 40%, rgba(47,107,71,0.08), transparent 60%),
         linear-gradient(180deg, var(--paper), var(--paper2));
-      color: var(--ink);
       -webkit-font-smoothing: antialiased;
+
       max-width: 980px;
       margin: 18px auto;
       padding: 0 14px calc(118px + env(safe-area-inset-bottom));
+      position: relative;
+    }
+
+    /* subtle paper grain */
+    body::before{
+      content:"";
+      pointer-events:none;
+      position: fixed;
+      inset: 0;
+      opacity: 0.18;
+      mix-blend-mode: multiply;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+      background-size: 260px 260px;
     }
 
     /* HEADER */
     h1{
       margin: 0 0 6px;
-      font-weight: 950;
-      letter-spacing: -0.05em;
+      font-weight: 985;
+      letter-spacing: -0.07em;
       text-transform: uppercase;
-      font-size: 24px;
-      line-height: 1.02;
+      font-size: 36px;
+      line-height: 1.0;
     }
     .sub{
       margin: 0 0 14px;
       color: var(--muted);
-      font-size: 13px;
-      line-height: 1.35;
+      font-size: 12px;
+      line-height: 1.18;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.02em;
+      font-weight: 850;
     }
     .sub b{ color: var(--ink); }
 
-    /* LAYOUT */
-    .card{
-      border: 1px solid var(--rule);
-      border-radius: var(--radius);
-      background: var(--glass);
-      backdrop-filter: blur(7px);
-      padding: 14px;
-      box-shadow: 0 1px 0 rgba(0,0,0,0.04);
-    }
-    .row{
-      display:flex;
-      gap:12px;
-      align-items:flex-end;
-      flex-wrap:wrap;
-      margin: 0;
-    }
-    .right{
-      margin-left:auto;
-      text-align:right;
-    }
-
-    .label{
-      font-size: 11px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 6px;
-      font-weight: 900;
-    }
-
-    .pill{
-      display:inline-flex;
-      max-width: 100%;
-      overflow:hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      padding: 8px 12px;
-      border: 1px solid var(--rule);
-      border-radius: 999px;
-      background: rgba(255,255,255,0.42);
-      font-weight: 900;
-      letter-spacing: -0.01em;
-      text-transform: uppercase;
-    }
-
-    .timer{
-      font-size: 58px;
-      font-weight: 980;
-      letter-spacing: -0.06em;
-      line-height: 0.95;
-    }
-
     /* BUTTONS */
     button{
-      border: 1px solid var(--rule);
-      background: rgba(255,255,255,0.35);
+      border: 1px solid var(--rule-strong);
+      background: rgba(255,255,255,0.44);
       color: var(--ink);
-      border-radius: 14px;
-      padding: 12px 14px;
-      font-weight: 950;
-      letter-spacing: -0.01em;
+      border-radius: 16px;
+      padding: 11px 12px;
+      font-weight: 985;
+      letter-spacing: -0.02em;
       text-transform: uppercase;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
-      transition: transform .03s ease, background .15s ease, border-color .15s ease;
+      transition: transform .03s ease, background .15s ease, border-color .15s ease, filter .15s ease;
     }
     button:active{ transform: scale(0.99); }
     button:disabled{ opacity:0.5; cursor:not-allowed; transform:none; }
@@ -136,34 +103,105 @@
       color: var(--paper);
     }
     button.danger{
-      background: rgba(225,6,0,0.12);
-      border-color: rgba(225,6,0,0.25);
-      color: var(--accent);
+      background: rgba(225,6,0,0.14);
+      border-color: rgba(225,6,0,0.38);
+      color: var(--accent-red);
     }
 
-    /* TOP ACTIONS */
-    .topActions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      margin-top: 10px;
+    /* HERO BLOCK */
+    .hero{
+      border: 1.5px solid var(--rule-strong);
+      background: var(--panel);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
     }
-    .spacer{ flex: 1; }
+
+    .heroTop{
+      display:grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 0;
+    }
+
+    .heroLeft, .heroRight{
+      padding: 14px;
+    }
+    .heroRight{
+      border-left: 1px solid var(--rule-strong);
+      background: var(--panel2);
+    }
+
+    .label{
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 990;
+    }
+
+    .timer{
+      font-size: 56px;
+      font-weight: 995;
+      letter-spacing: -0.085em;
+      line-height: 0.95;
+    }
+
+    .pill{
+      display:inline-flex;
+      max-width: 100%;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 8px 12px;
+      border: 1px solid var(--rule-strong);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.68);
+      font-weight: 985;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+    }
+
+    /* thick rule divider like a poster */
+    .heroRule{
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-orange), rgba(240,102,42,0.25));
+    }
+
+    .heroActions{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items:center;
+      padding: 12px 14px 14px;
+      background: rgba(255,255,255,0.52);
+      border-top: 1px solid rgba(11,11,11,0.10);
+    }
+
     #status{
-      font-size: 12px;
+      font-size: 11px;
       color: var(--muted);
       text-transform: uppercase;
-      letter-spacing: 0.12em;
-      font-weight: 900;
+      letter-spacing: 0.09em;
+      font-weight: 990;
       white-space: nowrap;
     }
+    .spacer{ flex:1; }
 
-    /* TOTALS */
+    /* LOG CARD */
+    .card{
+      border: 1px solid var(--rule);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.34);
+      backdrop-filter: blur(7px);
+      padding: 14px;
+      margin-top: 14px;
+    }
+
     #totals{
       margin-top: 8px;
       color: var(--ink);
-      font-weight: 900;
+      font-weight: 985;
       text-transform: uppercase;
       letter-spacing: -0.02em;
     }
@@ -171,28 +209,33 @@
       border-top: 1px dashed var(--rule);
       padding-top: 8px;
       margin-top: 8px;
-      font-weight: 850;
+      font-weight: 930;
+      letter-spacing: -0.01em;
     }
 
-    /* TABLE */
     table{ width:100%; border-collapse: collapse; margin-top: 12px; }
-    th, td{ padding: 12px 8px; border-bottom: 1px solid var(--rule); vertical-align: middle; }
+    th, td{
+      padding: 12px 8px;
+      border-bottom: 1px solid var(--rule);
+      vertical-align: middle;
+      letter-spacing: -0.01em;
+    }
     th{
       font-size: 10px;
-      letter-spacing: 0.18em;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--muted);
-      font-weight: 950;
+      font-weight: 990;
     }
 
-    /* BOTTOM THUMB BAR */
+    /* BOTTOM BAR */
     .bottomBar{
       position: fixed;
       left:0; right:0; bottom:0;
       padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
-      background: rgba(243,234,216,0.86);
-      backdrop-filter: blur(14px);
-      border-top: 1px solid var(--rule);
+      background: rgba(243,234,216,0.90);
+      backdrop-filter: blur(16px);
+      border-top: 1.5px solid var(--rule-strong);
       z-index: 9990;
     }
     .bottomBarInner{
@@ -203,21 +246,36 @@
       gap: 10px;
     }
     .bottomBar button{
-      padding: 14px 12px;
-      border-radius: 16px;
-      font-size: 16px;
+      padding: 16px 10px;
+      border-radius: 18px;
+      font-size: 17px;
+      border-width: 2px;
+      background: rgba(255,255,255,0.72);
+      filter: saturate(1.05);
     }
     .bottomBar button.primary{
       position: relative;
+      background: var(--ink);
+      border-color: var(--ink);
+      color: var(--paper);
     }
     .bottomBar button.primary::after{
       content:"";
       position:absolute;
       left: 12px; right: 12px; bottom: 10px;
       height: 2px;
-      background: var(--accent);
+      background: var(--accent-orange);
       opacity: 0.95;
       border-radius: 2px;
+    }
+    .bottomBar button.danger{
+      background: rgba(225,6,0,0.18);
+      border-color: rgba(225,6,0,0.45);
+      color: var(--accent-red);
+    }
+    .bottomBar button:not(.primary):not(.danger){
+      border-color: rgba(11,11,11,0.40);
+      background: rgba(255,255,255,0.78);
     }
 
     /* ACTIVITY SHEET */
@@ -232,14 +290,14 @@
     }
     .sheet{
       width: min(980px, 100%);
-      background: var(--glass-strong);
-      border: 1px solid var(--rule);
-      border-radius: 22px;
+      background: rgba(255,255,255,0.68);
+      border: 1.5px solid var(--rule-strong);
+      border-radius: 24px;
       box-shadow: var(--shadow);
       padding: 14px;
       max-height: 80vh;
       overflow:auto;
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
     }
     .sheetHeader{
       display:flex;
@@ -250,51 +308,47 @@
     }
     .sheetTitle{
       margin:0;
-      font-size: 11px;
-      letter-spacing: 0.20em;
+      font-size: 10px;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
       color: var(--muted);
-      font-weight: 950;
+      font-weight: 990;
     }
     .sheetHint{
       margin: 6px 0 0;
       color: var(--ink);
-      font-weight: 980;
-      letter-spacing: -0.04em;
+      font-weight: 995;
+      letter-spacing: -0.055em;
       font-size: 20px;
-      line-height: 1.10;
+      line-height: 1.08;
       text-transform: uppercase;
     }
-    .sheetHint em{
-      font-style: normal;
-      color: var(--accent);
-    }
+    .sheetHint em{ font-style: normal; color: var(--accent-green); }
 
     .activityInput{
       width:100%;
       padding: 14px 14px;
-      border-radius: 16px;
-      border: 1px solid var(--rule);
-      background: rgba(255,255,255,0.5);
+      border-radius: 18px;
+      border: 1.5px solid var(--rule-strong);
+      background: rgba(255,255,255,0.72);
       color: var(--ink);
       font-size: 16px;
       outline:none;
-      font-weight: 950;
+      font-weight: 990;
       text-transform: uppercase;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.02em;
     }
-
     .chips{ display:flex; flex-wrap:wrap; gap: 10px; margin-top: 12px; }
     .chip{
-      background: rgba(255,255,255,0.5);
-      border: 1px solid var(--rule);
+      background: rgba(255,255,255,0.72);
+      border: 1.5px solid var(--rule-strong);
       border-radius: 999px;
       padding: 10px 14px;
-      font-weight: 980;
-      letter-spacing: -0.01em;
+      font-weight: 990;
+      letter-spacing: -0.02em;
       text-transform: uppercase;
     }
-    .chip:hover{ background: rgba(255,255,255,0.7); }
+    .chip:hover{ background: rgba(255,255,255,0.86); }
 
     .sheetActions{
       display:grid;
@@ -304,40 +358,47 @@
     }
     .sheetActions button{
       padding: 14px 12px;
-      border-radius: 16px;
+      border-radius: 18px;
+      border-width: 2px;
     }
 
-    /* SMALL SCREEN TABLE SIMPLIFICATION */
+    @media (max-width: 720px){
+      .heroTop{ grid-template-columns: 1fr; }
+      .heroRight{
+        border-left: none;
+        border-top: 1px solid var(--rule-strong);
+      }
+      .timer{ font-size: 52px; }
+    }
     @media (max-width: 560px){
       th:nth-child(2), td:nth-child(2),
       th:nth-child(3), td:nth-child(3){ display:none; }
       th:nth-child(4), td:nth-child(4){ width: 120px; }
     }
-    @media (min-width: 720px){
-      .timer{ font-size: 68px; }
-      .overlay{ align-items:center; padding: 16px; }
-      .sheet{ max-height: 70vh; }
-    }
   </style>
 </head>
 
 <body>
-  <h1>HABIT TIMER</h1>
+  <h1>HABIT TRACKER</h1>
   <p class="sub">TRACK WHAT YOU DO + HOW LONG IT TAKES. USE <b>NEXT</b> TO ROLL OVER INSTANTLY.</p>
 
-  <div class="card">
-    <div class="row">
-      <div>
-        <div class="label">CURRENT</div>
-        <div id="currentActivity" class="pill">—</div>
-      </div>
-      <div class="right">
+  <!-- SINGLE HERO BLOCK -->
+  <div class="hero">
+    <div class="heroTop">
+      <div class="heroLeft">
         <div class="label">TIMER</div>
         <div id="timer" class="timer">00:00:00</div>
       </div>
+
+      <div class="heroRight">
+        <div class="label">CURRENT</div>
+        <div id="currentActivity" class="pill">—</div>
+      </div>
     </div>
 
-    <div class="topActions">
+    <div class="heroRule"></div>
+
+    <div class="heroActions">
       <button id="exportBtn">EXPORT CSV</button>
       <button id="clearTodayBtn" class="danger">CLEAR TODAY</button>
       <span class="spacer"></span>
@@ -345,7 +406,8 @@
     </div>
   </div>
 
-  <div class="card" style="margin-top:14px;">
+  <!-- LOG -->
+  <div class="card">
     <div class="label">TODAY TOTALS</div>
     <div id="totals">NO ENTRIES YET.</div>
 
@@ -395,7 +457,7 @@
 
 <script>
 (() => {
-  const ENTRIES_KEY = "habit_timer_entries_poster_v1";
+  const ENTRIES_KEY = "habit_tracker_entries_hero_v1";
   const RECENTS_KEY = "habit_timer_recent_activities_v1";
   const ACTIVE_KEY  = "habit_timer_active_task_v1";
   const MAX_RECENTS = 12;
@@ -511,7 +573,6 @@
     timerEl.textContent = formatHMS(elapsed);
   }
 
-  // ---- Recents ----
   function loadRecents() {
     return loadJSON(RECENTS_KEY, []);
   }
@@ -531,9 +592,9 @@
     if (recents.length === 0) {
       const hint = document.createElement("div");
       hint.style.color = "rgba(11,11,11,0.7)";
-      hint.style.fontWeight = "900";
+      hint.style.fontWeight = "990";
       hint.style.textTransform = "uppercase";
-      hint.style.letterSpacing = "0.08em";
+      hint.style.letterSpacing = "0.06em";
       hint.style.marginTop = "10px";
       hint.textContent = "NO RECENTS YET. START A TASK ONCE.";
       chipsEl.appendChild(hint);
@@ -553,7 +614,6 @@
     }
   }
 
-  // ---- Active task persistence (Resume) ----
   function saveActiveTask() {
     if (!running) return;
     saveJSON(ACTIVE_KEY, { activity: currentActivity, startTs });
@@ -582,7 +642,6 @@
     tickHandle = setInterval(tick, 250);
   }
 
-  // ---- Sheet ----
   function openSheet() {
     renderRecentsChips();
     overlay.style.display = "flex";
@@ -612,7 +671,6 @@
   startModalBtn.addEventListener("click", submitSheet);
   clearInputBtn.addEventListener("click", () => { activityInput.value = ""; activityInput.focus(); });
 
-  // ---- Timer actions ----
   function startTimerWithActivity(name) {
     if (running) return;
 
@@ -640,7 +698,7 @@
     tickHandle = null;
 
     if (durationMs < 2000) {
-      if (!silentTooShort) statusEl.textContent = "IGNORED (TOO SHORT)";
+      if (!silentTooShort) statusEl.textContent = "IGNORED";
     } else {
       addEntry({
         id: crypto.randomUUID(),
@@ -674,7 +732,6 @@
   });
   window.addEventListener("beforeunload", () => { saveActiveTask(); });
 
-  // ---- Render log ----
   function render() {
     const entries = getTodayEntries().sort((a,b) => a.startTs - b.startTs);
 
@@ -685,7 +742,7 @@
         <td><span class="pill">${escapeHtml(e.activity)}</span></td>
         <td>${toLocalTimeString(e.startTs)}</td>
         <td>${toLocalTimeString(e.endTs)}</td>
-        <td style="font-weight:950; letter-spacing:-0.03em;">${formatHMS(e.durationMs)}</td>
+        <td style="font-weight:995; letter-spacing:-0.05em;">${formatHMS(e.durationMs)}</td>
         <td><button data-del="${e.id}">DELETE</button></td>
       `;
       logBody.appendChild(tr);
@@ -711,7 +768,6 @@
     }
   }
 
-  // ---- Export/Clear ----
   function exportCSV() {
     const entries = loadEntries().sort((a,b) => a.startTs - b.startTs);
     const header = ["day","activity","start","end","duration_seconds"].join(",");
@@ -729,7 +785,7 @@
 
     const a = document.createElement("a");
     a.href = url;
-    a.download = "habit-timer-export.csv";
+    a.download = "habit-tracker-export.csv";
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -742,14 +798,12 @@
     render();
   }
 
-  // wiring
   startBtn.addEventListener("click", openSheet);
   endBtn.addEventListener("click", () => stopAndSave({ silentTooShort: false }));
   nextBtn.addEventListener("click", nextTask);
   exportBtn.addEventListener("click", exportCSV);
   clearTodayBtn.addEventListener("click", clearToday);
 
-  // init
   setUiState(false);
   render();
   maybeResumeActiveTask();
